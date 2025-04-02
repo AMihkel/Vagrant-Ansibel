@@ -1,0 +1,138 @@
+Vagrant.configure("2") do |config|
+    #--------------------------------------------------------------------------
+    # 1) Debian 12 Docker
+    #--------------------------------------------------------------------------
+    config.vm.define "mihkel-dockerhost" do |dockerhost|
+      dockerhost.vm.box = "generic/debian12"
+      dockerhost.vm.hostname = "mihkel-dockerhost"
+  
+      dockerhost.vm.network "public_network"
+      dockerhost.vm.network "private_network",
+        ip: "10.10.10.130",
+        netmask: "255.255.255.128",
+        virtualbox__intnet: "ansible_mihkel"
+  
+      dockerhost.vm.provider "virtualbox" do |vb|
+        vb.name = "mihkel-dockerhost"
+        vb.cpus = 4
+        vb.memory = 8192
+      end
+  
+      # Uuendused ja programmide installeerimnine
+      dockerhost.vm.provision "shell", inline: <<-SHELL
+        apt-get update -y
+        apt-get install -y snmpd tmux mc wget tree git \
+                           ca-certificates curl gnupg2 \
+                           software-properties-common apt-transport-https
+  
+        # Dockerile vajalikud asjad
+        curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] \
+              https://download.docker.com/linux/debian bookworm stable" \
+           > /etc/apt/sources.list.d/docker.list
+  
+        apt-get update -y
+        apt-get install -y docker-ce docker-ce-cli containerd.io
+        systemctl enable docker
+        systemctl start docker
+      SHELL
+    end
+  
+    #--------------------------------------------------------------------------
+    # 2) Debian 12 Ansible
+    #--------------------------------------------------------------------------
+    config.vm.define "mihkel-ansible" do |ansible|
+      ansible.vm.box = "generic/debian12"
+      ansible.vm.hostname = "mihkel-ansible"
+      ansible.vm.network "public_network"
+      ansible.vm.network "private_network",
+        ip: "10.10.10.131",
+        netmask: "255.255.255.128",
+        virtualbox__intnet: "ansible_mihkel"
+  
+      ansible.vm.provider "virtualbox" do |vb|
+        vb.name = "mihkel-ansible"
+        vb.cpus = 2
+        vb.memory = 2048
+      end
+  
+      # Ansible + tesised
+      ansible.vm.provision "shell", inline: <<-SHELL
+        apt-get update -y
+        apt-get install -y snmpd tmux mc wget tree git \
+                           sshpass ansible yamllint ansible-lint
+      SHELL
+    end
+  
+    #--------------------------------------------------------------------------
+    # 3) Ubuntu 24.04
+    #--------------------------------------------------------------------------
+    config.vm.define "mihkel-ubuntu" do |ub|
+      ub.vm.box = "generic/ubuntu2204"
+      ub.vm.hostname = "mihkel-ubuntu"
+      ub.vm.network "public_network"
+      ub.vm.network "private_network",
+        ip: "10.10.10.132",
+        netmask: "255.255.255.128",
+        virtualbox__intnet: "ansible_mihkel"
+  
+      ub.vm.provider "virtualbox" do |vb|
+        vb.name = "mihkel-ubuntu"
+        vb.cpus = 2
+        vb.memory = 2048
+      end
+  
+      ub.vm.provision "shell", inline: <<-SHELL
+        apt-get update -y
+        apt-get install -y snmpd tmux mc wget tree git
+      SHELL
+    end
+  
+    #--------------------------------------------------------------------------
+    # 4) CentOS Stream 9
+    #--------------------------------------------------------------------------
+    config.vm.define "mihkel-centos" do |cent|
+      cent.vm.box = "generic/centos9s"
+      cent.vm.hostname = "mihkel-centos"
+      cent.vm.network "public_network"
+      cent.vm.network "private_network",
+        ip: "10.10.10.133",
+        netmask: "255.255.255.128",
+        virtualbox__intnet: "ansible_sinunimi"
+  
+      cent.vm.provider "virtualbox" do |vb|
+        vb.name = "mihkel-centos"
+        vb.cpus = 2
+        vb.memory = 2048
+      end
+  
+      cent.vm.provision "shell", inline: <<-SHELL
+        dnf install -y snmpd tmux mc wget tree git
+      SHELL
+    end
+  
+    #--------------------------------------------------------------------------
+    # 5) OpenSUSE Leap 15
+    #--------------------------------------------------------------------------
+    config.vm.define "mihkel-opensuse" do |suse|
+      suse.vm.box = "generic/opensuse15"
+      suse.vm.hostname = "mihkel-opensuse"
+      suse.vm.network "public_network"
+      suse.vm.network "private_network",
+        ip: "10.10.10.134",
+        netmask: "255.255.255.128",
+        virtualbox__intnet: "ansible_mihkel"
+  
+      suse.vm.provider "virtualbox" do |vb|
+        vb.name = "mihkel-opensuse"
+        vb.cpus = 2
+        vb.memory = 2048
+      end
+  
+      suse.vm.provision "shell", inline: <<-SHELL
+        zypper --non-interactive refresh
+        zypper --non-interactive install snmpd tmux mc wget tree git
+      SHELL
+    end
+  end
+  
