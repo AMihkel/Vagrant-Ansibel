@@ -115,7 +115,7 @@ Vagrant.configure("2") do |config|
     # 5) OpenSUSE Leap 15
     #--------------------------------------------------------------------------
     config.vm.define "mihkel-opensuse" do |suse|
-      suse.vm.box = "generic/opensuse15"
+      suse.vm.box = "generic/opensuse42"
       suse.vm.hostname = "mihkel-opensuse"
       suse.vm.network "public_network"
       suse.vm.network "private_network",
