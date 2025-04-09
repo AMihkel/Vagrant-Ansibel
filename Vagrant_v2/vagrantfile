@@ -1,4 +1,4 @@
-#kasutan ssh-keysid kuna opensuse standardis ei taha paroolidega t66tada ning siis selle asemel, et seda muuta otsustasin v6tmete kasuks, kuna see on turvalisem.
+#kasutan ssh-keysid kuna opensuse standardis ei taha paroolidega t66tada ning siis selle asemel, et seda muuta otsustasin v6tmete kasuks, kuna see on turvalisem ning siis vajadusel saab neid muuta uuendada jne
 Vagrant.configure("2") do |config|
   #--------------------------------------------------------------------------
     # 1) Debian 12 Docker
@@ -18,6 +18,7 @@ Vagrant.configure("2") do |config|
         vb.cpus = 4
         vb.memory = 8192
       end
+      #avaliku v6tme kopeerimine
       dockerhost.vm.provision "file", 
         source: "Keys/id_rsa.pub", 
         destination: "/home/vagrant/id_rsa.pub"
