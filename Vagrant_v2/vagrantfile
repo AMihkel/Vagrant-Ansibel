@@ -71,8 +71,8 @@ Vagrant.configure("2") do |config|
         destination: "/home/vagrant/id_rsa"
       #kopeerin kohe ka ansible playbookid sisse
       config.vm.provision "file", source: "ansible", destination: "/home/vagrant/ansible"
-      #sama ka .ansible.cfg
-      config.vm.provision "file", source: ".ansible.cfg", destination: "/home/vagrant/.ansible.cfg"
+      #sama ka .ansible.cfg algselt on ilma punktita kuna muidu ei tahtnud ta github-i yles seda laadida
+      config.vm.provision "file", source: "ansible.cfg", destination: "/home/vagrant/.ansible.cfg"
     # Uuendused ja programmide installeerimnine
       ansible.vm.provision "shell", inline: <<-SHELL
     #enne uuendusi kopeerin avaliku v6tme hilisemaks ligip22suks
