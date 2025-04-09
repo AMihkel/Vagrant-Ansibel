@@ -1,0 +1,9 @@
+---
+req_pack:
+  - git
+  - tree
+  - wget
+  - mc
+  - tmux
+  - snmpd
+...

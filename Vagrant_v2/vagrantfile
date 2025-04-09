@@ -1,5 +1,6 @@
+#kasutan ssh-keysid kuna opensuse standardis ei taha paroolidega t66tada ning siis selle asemel, et seda muuta otsustasin v6tmete kasuks, kuna see on turvalisem.
 Vagrant.configure("2") do |config|
-    #--------------------------------------------------------------------------
+  #--------------------------------------------------------------------------
     # 1) Debian 12 Docker
     #--------------------------------------------------------------------------
     config.vm.define "mihkel-dockerhost" do |dockerhost|
@@ -68,15 +69,21 @@ Vagrant.configure("2") do |config|
       ansible.vm.provision "file", 
         source: "Keys/id_rsa",
         destination: "/home/vagrant/id_rsa"
+      #kopeerin kohe ka ansible playbookid sisse
+      config.vm.provision "file", source: "ansible", destination: "/home/vagrant/ansible"
+      #sama ka .ansible.cfg
+      config.vm.provision "file", source: ".ansible.cfg", destination: "/home/vagrant/.ansible.cfg"
     # Uuendused ja programmide installeerimnine
       ansible.vm.provision "shell", inline: <<-SHELL
     #enne uuendusi kopeerin avaliku v6tme hilisemaks ligip22suks
         cat /home/vagrant/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys
         rm /home/vagrant/id_rsa.pub
         mv /home/vagrant/id_rsa /home/vagrant/.ssh/is_rsa
+        chmod 600 /home/vagrant/.ssh/is_rsa #et v6tit kasutada peab tal olema 600 6igused, muidu loetakse seda ebaturvaliseks.
         apt-get update -y
         apt-get install -y snmpd tmux mc wget tree git \
                            sshpass ansible yamllint ansible-lint
+        ansible-galaxy collection install community.general #ansible core ei toeta zypper pkgmr-i
       SHELL
     end
   
@@ -142,7 +149,7 @@ Vagrant.configure("2") do |config|
     # 5) OpenSUSE Leap 15
     #--------------------------------------------------------------------------
     config.vm.define "mihkel-opensuse" do |suse|
-      suse.vm.box = "generic/opensuse42"
+      suse.vm.box = "opensuse/Leap-15.5.x86_64" #ei kasuta 42 kuna seal on zypper ver 1.13 ja see ei toeta ansible auto functsiooni
       suse.vm.hostname = "mihkel-opensuse"
       suse.vm.network "public_network"
       suse.vm.network "private_network",

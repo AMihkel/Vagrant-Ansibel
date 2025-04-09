@@ -1,0 +1,23 @@
+---
+- name: Masinate kontroll
+  hosts: Linux
+  gather_facts: yes
+  become: yes
+
+
+  tasks:
+  - name: Mis on masinasse installitud
+    ansible.builtin.package_facts:
+      manager: auto
+
+  - name: Mida pole installeeritud
+    debug:
+      msg: "Puudu: {{ req_pack | difference(ansible_facts.packages.keys() | list) }}"
+    when: ((req_pack | difference(ansible_facts.packages.keys() | list)) | length > 0)
+  
+  - name: Installin puuduvad
+    ansible.builtin.package:
+      name: "{{ item }}"
+      state: present
+    loop: "{{ req_pack | difference(ansible_facts.packages.keys() | list) }}"
+...

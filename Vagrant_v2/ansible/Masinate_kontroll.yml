@@ -1,0 +1,12 @@
+---
+- name: Masinate kontroll
+  hosts: Linux
+  gather_facts: yes
+  become: false
+  tasks:
+  - name: Kas masinad on püsti
+    ansible.builtin.ping:
+
+  - name: OS ver
+    debug: msg="{{ ansible_distribution }} - {{ ansible_os_family }} - {{ ansible_distribution_version }}"
+...
