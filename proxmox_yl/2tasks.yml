@@ -3,13 +3,12 @@
   hosts: windows
   gather_facts: false
   tasks:
-   - name: Download the 7-Zip package
-     win_get_url:
-      url: https://www.7-zip.org/a/7z1701-x64.msi
-      dest: C:\temp\7z.msi
-
    # Create folder at client
    - name: Create C:\temp
      win_file:
       path: C:\temp
       state: directory
+   - name: Download the 7-Zip package
+     win_get_url:
+      url: https://7-zip.org/a/7z2409-x64.msi
+      dest: C:\temp\7z.msi
